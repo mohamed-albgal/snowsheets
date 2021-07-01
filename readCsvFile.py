@@ -2,6 +2,7 @@ import csv
 import json
 
 
+
 def readAllFiles(*args, readFunc):
     fileData = [ readFunc(x) for x in args ]
     return { k: v for map in fileData for k,v in map.items()}
@@ -19,20 +20,12 @@ def getNamesNotInSpreadsheet(spreadsheetNames, snowNames):
     return { x : snowNames[x] for x in intersection}
 
 def writeJsonToFile(fileName, data):
-    with open("output.json", 'w') as f:
-        for key in sorted(data.keys()):
-            f.write(key + '\n')
+    with open(fileName, 'w') as f:
         json.dump(data,f, indent=4)
 
 def main():
-    spreadsheet = readSpreadsheet("badges.csv")
-    snownames = readSnow("u_facilities.csv")
-    results = getNamesNotInSpreadsheet(spreadsheet, snownames)
+    spreadsheets = readAllFiles("us.csv", "sr.csv", "con.csv", "van.csv", readFunc=readSpreadsheet)
+    snow = readAllFiles('bou.csv', "mor.csv", "pla.csv", "sea.csv", "sfo.csv", "tys.csv", "lon.csv",'sjsnow.csv', 'vn.csv',  readFunc=readSnow)
+    results = getNamesNotInSpreadsheet(spreadsheets, snow)
     writeJsonToFile("output.json", results)
-"""
-merge all spread sheet tabs
-get spreadsheet data via GET
-write to spreadsheet?
-
-
-"""
+main()
